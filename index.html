@@ -210,6 +210,7 @@
         .monogram { display:inline-flex; align-items:center; justify-content:center; white-space:nowrap; line-height:1;
             font-family:"Cinzel Decorative",serif; font-weight:700; color:#D4AF37; letter-spacing:0; }
         .monogram .amp { font-family:"Great Vibes",cursive; font-weight:400; font-size:1.15em; color:#F5E1A4; margin:0 .06em; position:relative; top:.04em; }
+        .ev-ico { width:1.4em; height:1.4em; display:block; }
     </style>
 </head>
 <body class="gate-locked font-sans antialiased selection:bg-royal-gold selection:text-royal-maroon">
@@ -223,6 +224,24 @@
       <defs>
         <radialGradient id="gHalo" cx="50%" cy="45%" r="55%"><stop offset="0" stop-color="#F6D77A" stop-opacity=".35"/><stop offset="1" stop-color="#F6D77A" stop-opacity="0"/></radialGradient>
         <radialGradient id="rsHalo" cx="50%" cy="40%" r="60%"><stop offset="0" stop-color="#F6D77A" stop-opacity=".3"/><stop offset="1" stop-color="#F6D77A" stop-opacity="0"/></radialGradient>
+        <symbol id="ico-mandap" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="2" r="0.9" fill="currentColor" stroke="none"/><path d="M12 2.8 V4"/>
+<path d="M3 9.5 Q12 1.5 21 9.5 Z" fill="currentColor" fill-opacity=".25"/>
+<path d="M5 9.5 V21 M19 9.5 V21"/>
+<path d="M5 11.5 Q8.5 14 12 11.5 Q15.5 14 19 11.5" stroke-dasharray="0.4 1.8" stroke-width="1.8"/>
+<path d="M2.5 21 H21.5"/>
+<path d="M12 20.3 C10.2 19 10.6 17 12 15.4 C12.3 17 14 17.4 13.6 19 C13.4 19.8 12.8 20.3 12 20.3Z" fill="currentColor"/>
+<path d="M9.3 21 L10 19.3 H14 L14.7 21" />
+</g></symbol>
+        <symbol id="ico-kalash" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+<path d="M10.2 10.4 Q6.5 10 4.8 7.6 Q8.4 7.6 10.4 9.8 Z" fill="currentColor" fill-opacity=".4"/>
+<path d="M13.8 10.4 Q17.5 10 19.2 7.6 Q15.6 7.6 13.6 9.8 Z" fill="currentColor" fill-opacity=".4"/>
+<circle cx="12" cy="7.2" r="2.5" fill="currentColor" fill-opacity=".55"/><path d="M12 4.7 V3.4"/>
+<path d="M9.8 10.4 H14.2 L14.6 12.2 H9.4 Z"/>
+<path d="M8.4 12.2 H15.6 C20 13.6 19.8 21 12 21 C4.2 21 4 13.6 8.4 12.2Z" fill="currentColor" fill-opacity=".25"/>
+<path d="M6.3 16 H17.7"/>
+<circle cx="12" cy="18.4" r="1" fill="currentColor" stroke="none"/>
+</g></symbol>
         <symbol id="icon-ganesha" viewBox="0 -4 120 126">
           <g fill="none" stroke="#E8C66A" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="60" cy="62" r="56" fill="url(#gHalo)" stroke="none"/>
@@ -417,7 +436,7 @@
                     <!-- Pill 4: Shubh Vivah -->
                     <div onclick="jumpToScene(5)" class="cursor-pointer p-3.5 rounded-2xl bg-royal-gold/15 border border-royal-gold/60 hover:border-royal-gold transition flex items-start gap-3">
                         <div class="w-9 h-9 rounded-xl bg-royal-gold text-royal-maroon flex items-center justify-center shrink-0 mt-0.5">
-                            <i class="fa-solid fa-fire-flame-curved"></i>
+                            <svg class="ev-ico" aria-label="Mandap"><use href="#ico-mandap"/></svg>
                         </div>
                         <div class="text-xs">
                             <p class="font-hindi font-bold text-royal-gold text-sm">4. शुभविवाह (Shubh Vivah)</p>
@@ -429,7 +448,7 @@
                     <!-- Pill 5: Vadhu Pravesh -->
                     <div onclick="jumpToScene(6)" class="cursor-pointer p-3.5 rounded-2xl bg-black/35 border border-rose-400/35 hover:border-rose-300 transition flex items-start gap-3">
                         <div class="w-9 h-9 rounded-xl bg-rose-500/20 border border-rose-300/50 flex items-center justify-center text-rose-200 shrink-0 mt-0.5">
-                            <i class="fa-solid fa-house-chimney-heart"></i>
+                            <svg class="ev-ico" aria-label="Kalash"><use href="#ico-kalash"/></svg>
                         </div>
                         <div class="text-xs">
                             <p class="font-hindi font-bold text-rose-200 text-sm">5. वधू प्रवेश (Vadhu Pravesh)</p>
@@ -706,7 +725,7 @@
                         <!-- SCENE 5 (6/7): EVENT 4 — शुभविवाह (02 Dec 2026 | नवमी | Barat 6:00 PM) -->
                         <div class="reel-scene absolute inset-0 flex flex-col items-center justify-center text-center p-5 bg-gradient-to-b from-red-900/50 via-royal-maroon/40 to-transparent" data-scene="5">
                             <div class="w-11 h-11 rounded-2xl bg-royal-gold text-royal-maroon flex items-center justify-center text-lg mb-1.5 shadow-lg animate-float">
-                                <i class="fa-solid fa-fire-flame-curved"></i>
+                                <svg class="ev-ico" aria-label="Mandap"><use href="#ico-mandap"/></svg>
                             </div>
                             <span class="px-3 py-0.5 rounded-full bg-royal-gold text-royal-maroon font-bold text-[10px] uppercase tracking-wider mb-1">
                                 कार्यक्रम 04 • Main Ceremony
@@ -747,7 +766,7 @@
                         <!-- SCENE 6 (7/7): EVENT 5 — वधू प्रवेश (03 Dec 2026 | दशमी | Village: Devra, Satna) -->
                         <div class="reel-scene absolute inset-0 flex flex-col items-center justify-center text-center p-5 bg-gradient-to-b from-rose-900/45 via-transparent to-transparent" data-scene="6">
                             <div class="w-11 h-11 rounded-2xl bg-rose-500/25 border border-rose-300 flex items-center justify-center text-rose-200 text-lg mb-1.5 animate-float">
-                                <i class="fa-solid fa-house-chimney-heart"></i>
+                                <svg class="ev-ico" aria-label="Kalash"><use href="#ico-kalash"/></svg>
                             </div>
                             <span class="px-3 py-0.5 rounded-full bg-rose-500/25 border border-rose-300/50 text-[10px] uppercase tracking-wider text-rose-200 mb-1">
                                 कार्यक्रम 05 • Event 05
@@ -1049,7 +1068,7 @@
                             Event 04 • Main Wedding Ceremony • Wednesday, 2 December 2026
                         </span>
                         <div class="w-10 h-10 rounded-2xl bg-royal-gold text-royal-maroon flex items-center justify-center text-base shadow">
-                            <i class="fa-solid fa-fire-flame-curved"></i>
+                            <svg class="ev-ico" aria-label="Mandap"><use href="#ico-mandap"/></svg>
                         </div>
                     </div>
 
@@ -1102,7 +1121,7 @@
                             Event 05 • 03 Dec 2026
                         </span>
                         <div class="w-10 h-10 rounded-2xl bg-rose-500/20 border border-rose-300 flex items-center justify-center text-rose-200">
-                            <i class="fa-solid fa-house-chimney-heart"></i>
+                            <svg class="ev-ico" aria-label="Kalash"><use href="#ico-kalash"/></svg>
                         </div>
                     </div>
 
