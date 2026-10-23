@@ -206,6 +206,10 @@
         @keyframes shimmer { to { background-position:200% center; } }
         .reveal { opacity:0; transform:translateY(28px); transition:opacity .9s ease, transform .9s ease; }
         .reveal.in { opacity:1; transform:none; }
+        .monogram-ring { display:flex; align-items:center; justify-content:center; overflow:hidden; }
+        .monogram { display:inline-flex; align-items:center; justify-content:center; white-space:nowrap; line-height:1;
+            font-family:"Cinzel Decorative",serif; font-weight:700; color:#D4AF37; letter-spacing:0; }
+        .monogram .amp { font-family:"Great Vibes",cursive; font-weight:400; font-size:1.15em; color:#F5E1A4; margin:0 .06em; position:relative; top:.04em; }
     </style>
 </head>
 <body class="gate-locked font-sans antialiased selection:bg-royal-gold selection:text-royal-maroon">
@@ -314,8 +318,8 @@
     <header class="sticky top-0 z-40 backdrop-blur-md bg-[#230408]/85 border-b border-royal-gold/30">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
             <a href="#" class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-full border-2 border-royal-gold bg-royal-crimson flex items-center justify-center font-royal font-bold text-royal-gold text-sm shadow">
-                    <span id="navMonogram">A &amp; A</span>
+                <div class="monogram-ring w-11 h-11 shrink-0 rounded-full border-2 border-royal-gold bg-royal-crimson shadow">
+                    <span id="navMonogram" class="monogram" style="font-size:14px">A<span class="amp">&amp;</span>A</span>
                 </div>
                 <div>
                     <p class="font-royal text-sm sm:text-base font-bold gold-text tracking-wider" id="navCoupleTitle">Ashutosh &amp; Akanksha</p>
@@ -554,8 +558,8 @@
 
                         <!-- SCENE 1 (2/7): Couple Reveal — Ashutosh Weds Akanksha -->
                         <div class="reel-scene absolute inset-0 flex flex-col items-center justify-center text-center p-5" data-scene="1">
-                            <div class="w-16 h-16 rounded-full border-2 border-royal-gold bg-royal-crimson/90 flex items-center justify-center font-royal text-lg font-bold text-royal-gold mb-3 shadow-md animate-float">
-                                <span id="scene1Monogram">A &amp; A</span>
+                            <div class="monogram-ring w-16 h-16 rounded-full border-2 border-royal-gold bg-royal-crimson/90 mb-3 shadow-md animate-float">
+                                <span id="scene1Monogram" class="monogram" style="font-size:20px">A<span class="amp">&amp;</span>A</span>
                             </div>
                             <p class="text-[10px] uppercase tracking-[0.25em] text-royal-goldLight mb-1">With Divine Blessings</p>
                             <h2 class="font-royal text-3xl font-bold gold-text leading-tight" id="scene1Groom">Ashutosh</h2>
