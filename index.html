@@ -134,9 +134,6 @@
         }
 
         /* Refined pointer-following gold glow (desktop only); never blocks taps. */
-        #cursorGlow { position:fixed; left:0; top:0; width:240px; height:240px; border-radius:50%; pointer-events:none; z-index:2; opacity:0; transform:translate(-50%,-50%); background:radial-gradient(circle,rgba(245,225,164,.13) 0%,rgba(212,175,55,.06) 35%,transparent 72%); transition:opacity .25s ease; }
-        @media (hover:hover) and (pointer:fine) { #cursorGlow { opacity:1; } }
-        @media (hover:none), (pointer:coarse) { #cursorGlow { display:none; } }
         @media (max-width: 639px) { .phone-frame { width:min(100%,340px); height:min(615px, calc(100svh - 150px)); min-height:540px; border-radius:32px; } body { background-attachment:scroll; } }
         @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior:auto !important; animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; } #petalCanvas { display:none; } }
 
@@ -211,13 +208,37 @@
             font-family:"Cinzel Decorative",serif; font-weight:700; color:#D4AF37; letter-spacing:0; }
         .monogram .amp { font-family:"Great Vibes",cursive; font-weight:400; font-size:1.15em; color:#F5E1A4; margin:0 .06em; position:relative; top:.04em; }
         .ev-ico { width:1.4em; height:1.4em; display:block; }
+        /* ===== Custom cursor & interaction effects ===== */
+        #fxCanvas { position:fixed; inset:0; width:100%; height:100%; pointer-events:none; z-index:190; }
+        #curDot, #curRing { position:fixed; left:0; top:0; pointer-events:none; z-index:200; opacity:0; transition:opacity .3s ease; will-change:transform; }
+        #curDot { width:8px; height:8px; margin:-4px 0 0 -4px; border-radius:50%; background:#FFF3B0; box-shadow:0 0 10px 3px rgba(245,158,11,.85), 0 0 22px 6px rgba(212,175,55,.45); }
+        #curRing { width:42px; height:42px; margin:-21px 0 0 -21px; }
+        #curRing span { position:absolute; inset:0; border-radius:50%; border:1.5px dashed rgba(212,175,55,.85);
+            background: radial-gradient(circle, rgba(212,175,55,.08) 0 55%, transparent 56%);
+            transition: transform .35s cubic-bezier(.2,.8,.2,1.2), background .3s ease, border-color .3s ease; animation: spinSlow 9s linear infinite; }
+        #curRing span::before, #curRing span::after { content:""; position:absolute; width:6px; height:6px; border-radius:50%; background:#F59E0B; box-shadow:0 0 6px #F59E0B; }
+        #curRing span::before { top:-3px; left:50%; margin-left:-3px; }
+        #curRing span::after { bottom:-3px; left:50%; margin-left:-3px; background:#E11D48; box-shadow:0 0 6px #E11D48; }
+        body.cursor-on #curDot, body.cursor-on #curRing { opacity:1; }
+        body.cursor-hover #curRing span { transform:scale(1.65); border-style:solid; border-color:#F5E1A4; background: radial-gradient(circle, rgba(245,225,164,.18) 0 60%, transparent 61%); animation-duration:3s; }
+        body.cursor-down #curRing span { transform:scale(.7); }
+        @media (hover:hover) and (pointer:fine) {
+            body.custom-cursor, body.custom-cursor a, body.custom-cursor button, body.custom-cursor [onclick] { cursor:none; }
+            body.custom-cursor input, body.custom-cursor textarea, body.custom-cursor select { cursor:text; }
+        }
+        @media (hover:none), (pointer:coarse) { #curDot, #curRing { display:none; } }
+        .gold-btn, .tilt-card { will-change: transform; }
+        .tilt-card { transition: transform .25s ease, box-shadow .25s ease; transform-style: preserve-3d; }
     </style>
 </head>
 <body class="gate-locked font-sans antialiased selection:bg-royal-gold selection:text-royal-maroon">
 
     <!-- User-provided wedding bhajan. Browsers require a tap before audio can start. -->
     <audio id="weddingMusic" src="wedding-bhajan.mp3" preload="metadata" loop></audio>
-    <div id="cursorGlow" aria-hidden="true"></div>
+    <!-- Custom cursor (desktop) + sparkle / petal effects canvas -->
+    <div id="curDot" aria-hidden="true"></div>
+    <div id="curRing" aria-hidden="true"><span></span></div>
+    <canvas id="fxCanvas" aria-hidden="true"></canvas>
 
     <!-- Original line-art icons: Shri Ganesha and Shri Ram–Sita -->
     <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -1831,6 +1852,110 @@
             draw();
         }
 
+
+        // ===== Custom cursor, sparkle trail, petal burst, magnetic buttons, card tilt =====
+        function initCursorFx() {
+            const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            const fine = window.matchMedia('(hover:hover) and (pointer:fine)').matches;
+            const canvas = document.getElementById('fxCanvas');
+            const ctx = canvas.getContext('2d');
+            let W, H, dpr = Math.min(window.devicePixelRatio || 1, 2);
+            const resize = () => { W = innerWidth; H = innerHeight; canvas.width = W * dpr; canvas.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0); };
+            resize(); addEventListener('resize', resize);
+
+            const parts = [];
+            const COLORS = ['#FFD966', '#F59E0B', '#EA580C', '#FDE68A', '#E11D48', '#F5E1A4'];
+            function spawn(x, y, kind, n, speed) {
+                for (let i = 0; i < n; i++) {
+                    const a = Math.random() * Math.PI * 2, v = (kind === 'burst' ? 2.5 + Math.random() * 3.5 : 0.3 + Math.random() * 0.8) * (speed || 1);
+                    parts.push({ x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v - (kind === 'burst' ? 1.2 : 0.2),
+                        life: 1, decay: kind === 'burst' ? 0.012 + Math.random() * 0.01 : 0.03 + Math.random() * 0.02,
+                        size: kind === 'burst' ? 4 + Math.random() * 4 : 1.5 + Math.random() * 2.2,
+                        rot: Math.random() * 6.28, vr: (Math.random() - .5) * 0.2,
+                        color: COLORS[(Math.random() * COLORS.length) | 0], shape: kind === 'burst' ? (Math.random() < .6 ? 'petal' : 'star') : (Math.random() < .5 ? 'star' : 'dot') });
+                }
+                if (parts.length > 400) parts.splice(0, parts.length - 400);
+            }
+            const ripples = [];
+            function drawStar(r) { ctx.beginPath(); for (let i = 0; i < 8; i++) { const rr = i % 2 ? r * .38 : r; const a = i * Math.PI / 4; ctx.lineTo(Math.cos(a) * rr, Math.sin(a) * rr); } ctx.closePath(); ctx.fill(); }
+            function drawPetal(r) { ctx.beginPath(); ctx.ellipse(0, 0, r, r * .45, 0, 0, Math.PI * 2); ctx.fill(); }
+            let running = false;
+            function loop() {
+                ctx.clearRect(0, 0, W, H);
+                for (let i = ripples.length - 1; i >= 0; i--) {
+                    const rp = ripples[i]; rp.r += 3.2; rp.life -= 0.03;
+                    if (rp.life <= 0) { ripples.splice(i, 1); continue; }
+                    ctx.strokeStyle = `rgba(245,225,164,${rp.life})`; ctx.lineWidth = 2;
+                    ctx.beginPath(); ctx.arc(rp.x, rp.y, rp.r, 0, Math.PI * 2); ctx.stroke();
+                }
+                for (let i = parts.length - 1; i >= 0; i--) {
+                    const p = parts[i];
+                    p.x += p.vx; p.y += p.vy; p.vy += p.shape === 'petal' ? 0.06 : 0.015; p.vx *= 0.985; p.rot += p.vr; p.life -= p.decay;
+                    if (p.life <= 0) { parts.splice(i, 1); continue; }
+                    ctx.save(); ctx.globalAlpha = Math.max(p.life, 0); ctx.translate(p.x, p.y); ctx.rotate(p.rot);
+                    ctx.fillStyle = p.color; ctx.shadowColor = p.color; ctx.shadowBlur = p.shape === 'star' ? 8 : 0;
+                    if (p.shape === 'star') drawStar(p.size * 1.6); else if (p.shape === 'petal') drawPetal(p.size); else { ctx.beginPath(); ctx.arc(0, 0, p.size, 0, 6.28); ctx.fill(); }
+                    ctx.restore();
+                }
+                if (parts.length || ripples.length) requestAnimationFrame(loop); else { running = false; ctx.clearRect(0, 0, W, H); }
+            }
+            const kick = () => { if (!running) { running = true; requestAnimationFrame(loop); } };
+
+            // Tap / click: petal burst + ripple (mobile and desktop)
+            addEventListener('pointerdown', (e) => {
+                if (reduce) return;
+                ripples.push({ x: e.clientX, y: e.clientY, r: 6, life: 1 });
+                spawn(e.clientX, e.clientY, 'burst', fine ? 16 : 12);
+                kick();
+                document.body.classList.add('cursor-down');
+            }, { passive: true });
+            addEventListener('pointerup', () => document.body.classList.remove('cursor-down'), { passive: true });
+
+            if (!fine) return;
+
+            // Custom cursor: dot follows exactly, mandala ring follows smoothly
+            document.body.classList.add('custom-cursor');
+            const dot = document.getElementById('curDot'), ring = document.getElementById('curRing');
+            let mx = innerWidth / 2, my = innerHeight / 2, rx = mx, ry = my, lastSpawn = 0;
+            addEventListener('pointermove', (e) => {
+                mx = e.clientX; my = e.clientY;
+                document.body.classList.add('cursor-on');
+                dot.style.transform = `translate3d(${mx}px, ${my}px, 0)`;
+                const now = performance.now();
+                if (!reduce && now - lastSpawn > 28) { lastSpawn = now; spawn(mx, my, 'trail', 2); kick(); }
+                const t = e.target.closest && e.target.closest('a, button, [onclick], input, label, .tilt-card');
+                document.body.classList.toggle('cursor-hover', !!t);
+            }, { passive: true });
+            document.addEventListener('mouseleave', () => document.body.classList.remove('cursor-on'));
+            (function follow() {
+                rx += (mx - rx) * 0.18; ry += (my - ry) * 0.18;
+                ring.style.transform = `translate3d(${rx}px, ${ry}px, 0)`;
+                requestAnimationFrame(follow);
+            })();
+
+            if (reduce) return;
+            // Magnetic gold buttons
+            document.querySelectorAll('.gold-btn, #bhajanFab').forEach(btn => {
+                btn.addEventListener('pointermove', (e) => {
+                    const b = btn.getBoundingClientRect();
+                    const dx = (e.clientX - (b.left + b.width / 2)) * 0.18, dy = (e.clientY - (b.top + b.height / 2)) * 0.25;
+                    btn.style.transform = `translate(${dx}px, ${dy}px)`;
+                });
+                btn.addEventListener('pointerleave', () => { btn.style.transform = ''; });
+            });
+            // Gentle 3D tilt on mantra and event cards
+            document.querySelectorAll('.mantra-card, #events-itinerary .rounded-3xl').forEach(card => {
+                card.classList.add('tilt-card');
+                card.addEventListener('pointermove', (e) => {
+                    const b = card.getBoundingClientRect();
+                    const px = (e.clientX - b.left) / b.width - 0.5, py = (e.clientY - b.top) / b.height - 0.5;
+                    card.style.transform = `perspective(900px) rotateX(${(-py * 5).toFixed(2)}deg) rotateY(${(px * 6).toFixed(2)}deg) translateY(-4px)`;
+                    card.style.boxShadow = `${(-px * 20).toFixed(0)}px ${(18 - py * 10).toFixed(0)}px 45px rgba(0,0,0,.55), 0 0 30px rgba(212,175,55,.18)`;
+                });
+                card.addEventListener('pointerleave', () => { card.style.transform = ''; card.style.boxShadow = ''; });
+            });
+        }
+
         window.addEventListener('DOMContentLoaded', () => {
             openPalaceGates();
             renderScene(0);
@@ -1838,13 +1963,7 @@
             startCountdown();
             initPetalCanvas();
             initReveal();
-            const glow = document.getElementById('cursorGlow');
-            if (glow && window.matchMedia('(hover:hover) and (pointer:fine)').matches) {
-                window.addEventListener('pointermove', (event) => {
-                    glow.style.left = event.clientX + 'px';
-                    glow.style.top = event.clientY + 'px';
-                }, { passive: true });
-            }
+            initCursorFx();
         });
     </script>
 </body>
